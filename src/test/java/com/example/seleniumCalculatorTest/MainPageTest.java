@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -20,7 +21,7 @@ import java.util.Random;
  * Poziadavky zakaznika:
  * - amount, cislo v intervale <0;1000000>
  * - interest, cislo v intervale <0;100>
- * - period , pocet rokov: 1,2,3,4,5 todo
+ * - period , pocet rokov: 1,2,3,4,5
  *   uzivatel musim vyplnit vsetky vstupne polia, zaroven musi zaskrtnut suhlas so spracovanim udajov
  * - uzivatel ma na vyber, ci vynosy su zdanene ( prednastavena hodnota: yes)
  * - kliknutim na reset sa formular vymaze
@@ -160,5 +161,38 @@ public class MainPageTest {
         interest.sendKeys(String.valueOf(5));
 
         Assert.assertFalse(result.isDisplayed());
+    }
+
+    @Test
+    public void redCollorCheck() {
+        resetBtn.click();
+        calculateBtn.click();
+        Assert.assertEquals(errorMessage.getCssValue("color"), "rgb(255, 0, 0)");
+    }
+
+    @Test
+    public void intervalCheckPeriod() {
+        for (int i = 0; i <= 10; i++) {
+            periodRng.sendKeys(Keys.RIGHT);
+        }
+        for (int i = 0; i <= 10; i++) {
+            periodRng.sendKeys(Keys.LEFT);
+        }
+    }
+
+    @Test
+    public void resultCheck() {
+        amount.sendKeys(String.valueOf(10000));
+        interest.sendKeys(String.valueOf(1));
+        taxYes.click();
+        agreement.click();
+
+        interest.sendKeys(String.valueOf(5));
+        for (int i = 0; i <= 4; i++) {
+            periodRng.sendKeys(Keys.RIGHT);
+        }
+        calculateBtn.click();
+        Assert.assertEquals(result.getText(), "Total amount : 17623.41 , net profit : 7623.41");
+        Assert.assertNotEquals(result.getText(), "Total amount : 17624.41 , net profit : 7623.41");
     }
 }
